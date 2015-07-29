@@ -72,7 +72,7 @@ namespace Sitecore.Sharedsource.Tasks
             SortOrder s = SortOrder.None;
             if (!string.IsNullOrEmpty(sort))
             {
-                s.TryParse(sort, true, out s);
+                SortOrder.TryParse(sort, true, out s);
             }
 
             return new TemplateConfiguration(database, template, dateField, yearTemplate, monthTemplate, dayTemplate, s, yearFormat, monthFormat, dayFormat,roots);
