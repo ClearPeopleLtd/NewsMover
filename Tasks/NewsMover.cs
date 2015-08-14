@@ -231,6 +231,10 @@ namespace Sitecore.Sharedsource.Tasks
                         {
                             root = GetOrCreateChild(root, config.MinuteFolder.Template, config.MinuteFolder.GetName(articleDate), config.SortOrder);
                         }
+                        if (config.SecondFolder != null)
+                        {
+                            root = GetOrCreateChild(root, config.SecondFolder.Template, config.SecondFolder.GetName(articleDate), config.SortOrder);
+                        }
                     }
                 }
             }
@@ -273,10 +277,26 @@ namespace Sitecore.Sharedsource.Tasks
         protected Item GetRoot(Item item, TemplateConfiguration config)
         {
             Item parent = item.Parent;
-
-            while (Templates.ContainsKey(parent.TemplateID) || IsItemYearMonthOrDay(parent, config))
+            bool rootfound = false;
+            while (!rootfound)
             {
-                parent = parent.Parent;
+                if (config.Roots.Select(x=>x.ID).ToList().Contains(parent.ID))
+                {
+                    rootfound = true;
+                }
+                else if(!(Templates.ContainsKey(parent.TemplateID) || IsItemYearMonthOrDay(parent, config)))
+                {
+                    rootfound = true;
+                }
+                else if(parent.Parent == null)
+                {
+                    rootfound = true;
+                }
+                else
+                {
+                    parent = parent.Parent;
+                }
+                
             }
 
             // enforce that sub-item sorting is set

@@ -35,6 +35,12 @@ namespace Sitecore.Sharedsource.Tasks
             string monthTemplate = null, monthFormat = null;
             string dayTemplate = null, dayFormat = null;
             string dateField = configNode["DateField"].InnerText;
+            string hourtemplate="" ;
+            string hourFormat="";
+            string minutetemplate="";
+            string minuteFormat="";
+            string secondtemplate="";
+            string secondFormat="";
             string roots = "";
 
             Sitecore.Diagnostics.Assert.IsNotNullOrEmpty(template, "Template");
@@ -48,6 +54,21 @@ namespace Sitecore.Sharedsource.Tasks
             {
                 Sitecore.Diagnostics.Log.Warn(string.Format("Template '{0}' not found.", template), configNode);
                 return null;
+            }
+            if (configNode["HourTemplate"] != null)
+            {
+                hourtemplate = configNode["HourTemplate"].InnerText;
+                hourFormat = configNode["HourTemplate"].GetAttributeWithDefault("formatString", "HH");
+            }
+            if (configNode["MinuteTemplate"] != null)
+            {
+                minutetemplate = configNode["MinuteTemplate"].InnerText;
+                minuteFormat = configNode["MinuteTemplate"].GetAttributeWithDefault("formatString", "mm");
+            }
+            if (configNode["SecondTemplate"] != null)
+            {
+                secondtemplate = configNode["SecondTemplate"].InnerText;
+                secondFormat = configNode["SecondTemplate"].GetAttributeWithDefault("formatString", "ss");
             }
 
             if (configNode["MonthTemplate"] != null)
@@ -75,7 +96,7 @@ namespace Sitecore.Sharedsource.Tasks
                 SortOrder.TryParse(sort, true, out s);
             }
 
-            return new TemplateConfiguration(database, template, dateField, yearTemplate, monthTemplate, dayTemplate, s, yearFormat, monthFormat, dayFormat,roots);
+            return new TemplateConfiguration(database, template, dateField, yearTemplate, monthTemplate, dayTemplate, hourtemplate, minutetemplate, secondtemplate, s, yearFormat, monthFormat, dayFormat, hourFormat, minuteFormat, secondFormat, roots);
         }
     }
 }

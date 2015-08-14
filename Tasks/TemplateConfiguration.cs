@@ -21,7 +21,7 @@ namespace Sitecore.Sharedsource.Tasks
     public class TemplateConfiguration
     {
         private Database _database;
-        private string _template, _yearTemplate, _monthTemplate, _dayTemplate, _roots;
+        private string _template, _yearTemplate, _monthTemplate, _dayTemplate, _roots, _hourtemplate, _minutTemplate, _secondTemplate;
         private string _yearFormat = "yyyy", _monthFormat = "MM", _dayFormat = "dd", _hourFormat = "HH", _minuteFormat = "mm", _secondFormat = "ss";
         
         /// <summary>
@@ -111,6 +111,54 @@ namespace Sitecore.Sharedsource.Tasks
             CreateFolders();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateConfiguration"/> class.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="template">The template.</param>
+        /// <param name="dateField">The date field.</param>
+        /// <param name="yearTemplate">The year template.</param>
+        /// <param name="monthTemplate">The month template.</param>
+        /// <param name="dayTemplate">The day template.</param>
+        /// <param name="sort">The sort.</param>
+        /// <param name="yearFormat">The year format.</param>
+        /// <param name="monthFormat">The month format.</param>
+        /// <param name="dayFormat">The day format.</param>
+        internal TemplateConfiguration(Database database, string template, string dateField, string yearTemplate, string monthTemplate, string dayTemplate, string hourTemplate, string minuteTemplate, string secondTemplate, SortOrder sort = SortOrder.None, string yearFormat = "yyyy", string monthFormat = "MM", string dayFormat = "dd", string hourFormt ="HH", string minuteFormat="mm", string secondFormat = "ss", string roots = "")
+        {
+            Sitecore.Diagnostics.Assert.IsNotNull(database, "Database");
+            Sitecore.Diagnostics.Assert.IsNotNullOrEmpty(template, "Template");
+            Sitecore.Diagnostics.Assert.IsNotNullOrEmpty(dateField, "DateField");
+            Sitecore.Diagnostics.Assert.IsNotNullOrEmpty(yearTemplate, "YearTemplate");            
+
+            if(!string.IsNullOrWhiteSpace(hourTemplate))
+                _hourtemplate = hourTemplate;
+            if (!string.IsNullOrWhiteSpace(minuteTemplate))
+                _minutTemplate = minuteTemplate;
+            if (!string.IsNullOrWhiteSpace(secondTemplate))
+                _secondTemplate = secondTemplate;
+
+            _hourFormat = hourFormt;
+            _minuteFormat = minuteFormat;
+            _secondFormat = secondFormat;
+
+
+            _database = database;
+            _template = template;
+            _yearTemplate = yearTemplate;
+            _monthTemplate = monthTemplate;
+            _dayTemplate = dayTemplate;
+            _yearFormat = yearFormat;
+            _monthFormat = monthFormat;
+            _dayFormat = dayFormat;
+            _roots = roots;
+            DateField = dateField;
+            SortOrder = sort;
+            CreateRoots();
+            CreateFolders();        
+
+    }
+
         private void CreateRoots()
         {
             if(Roots== null)
@@ -156,11 +204,25 @@ namespace Sitecore.Sharedsource.Tasks
             if (!string.IsNullOrEmpty(_dayTemplate))
             {
                 DayFolder = new Folder(_database.Templates[_dayTemplate], _dayFormat);
-                HourFolder = new Folder(_database.Templates[_dayTemplate], _hourFormat);
-                MinuteFolder = new Folder(_database.Templates[_dayTemplate], _minuteFormat);
-                SecondFolder = new Folder(_database.Templates[_dayTemplate], _secondFormat);
             }
-            
+            // we may also want to put in day folders
+            if (!string.IsNullOrEmpty(_hourtemplate))
+            {                
+                HourFolder = new Folder(_database.Templates[_hourtemplate], _hourFormat);                
+            }
+
+            // we may also want to put in day folders
+            if (!string.IsNullOrEmpty(_minutTemplate))
+            {                
+                MinuteFolder = new Folder(_database.Templates[_minutTemplate], _minuteFormat);             
+            }
+
+            // we may also want to put in day folders
+            if (!string.IsNullOrEmpty(_secondTemplate))
+            {                
+                SecondFolder = new Folder(_database.Templates[_secondTemplate], _secondFormat);
+            }
+
 
             // make sure we have a Month if we have a Day
             Sitecore.Diagnostics.Assert.IsFalse(MonthFolder == null && DayFolder != null, "dayTemplate without monthTemplate");
